@@ -28,9 +28,11 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'apps.account',
+    'apps.images',
 
     'social_django',
     'django_extensions',
+    'easy_thumbnails',
 ]
 
 MIDDLEWARE = [
@@ -110,7 +112,7 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [
-    BASE_DIR / 'css',
+    BASE_DIR / 'static',
 ]
 
 MEDIA_URL = 'media/'

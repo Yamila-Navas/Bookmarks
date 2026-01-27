@@ -2,10 +2,10 @@ from django.urls import path, include
 from django.contrib.auth import views as auth_views
 from . import views
 
-namespace = 'bookmarks'
+# app_name = 'account'
 
 urlpatterns = [
-    # bookmarks/login/  (personalizada)
+    # account/login/  (personalizada)
     # path('login/', views.user_login, name='login'),
 
     # VISTAS DEL FRAMEWORK DE AUTENTICACION DE DJANGO:
@@ -46,6 +46,6 @@ urlpatterns = [
     
 
     # PAGINAS DEL SITIO:
-    # bookmarks/
+    # account/
     path('', views.dashboard, name='dashboard')
 ]

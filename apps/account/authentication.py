@@ -29,6 +29,7 @@ class EmailAuthBackend:
 
 def create_profile(backend, user, *args, **kwargs):
     if backend.name == 'google-oauth2':
+        response = kwargs.get('response')
         photo_url = response.get('picture')
 
         profile, created = Profile.objects.get_or_create(user=user)
