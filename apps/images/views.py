@@ -7,6 +7,8 @@ from django.http import JsonResponse, HttpResponse
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from .forms import ImageCreateForm
 from .models import Image
+from apps.actions.utils import create_action
+from .redis import image_ranking, get_total_views
 
 
 @login_required
@@ -18,6 +20,7 @@ def image_create(request):
             new_image = form.save(commit=False)
             new_image.user = request.user
             new_image.save()
+            create_action(request.user, 'bookmarked image', new_image)
             messages.success(request, 'Image added successfully')
             return redirect(new_image.get_absolute_url())      
     else:
@@ -28,8 +31,10 @@ def image_create(request):
 @login_required
 def image_detail(request, id , slug):
     image = get_object_or_404(Image, id=id, slug=slug)
-    print(image)
-    return  render(request, 'images/image/detail.html', {'section': 'images', 'image': image})
+    total_views = get_total_views(request.user.id, image.id)
+    most_viewed = image_ranking()
+
+    return  render(request, 'images/image/detail.html', {'section': 'images', 'image': image,  'total_views': total_views, 'most_viewed': most_viewed})
 
 
 @login_required
@@ -38,14 +43,12 @@ def image_like(request):
     image_id = request.POST.get('id')
     action = request.POST.get('action')
 
-    print(action)
-    print(image_id)
-
     if image_id and action:
         try:
             image = Image.objects.get(id=image_id)
             if action == 'like':
                 image.users_like.add(request.user)
+                create_action(request.user, 'likes', image)
             else:
                 image.users_like.remove(request.user)
             return JsonResponse({'status': 'ok'})
@@ -76,5 +79,3 @@ def image_list(request):
     if images_only:
         return render(request, 'images/image/list_images.html', {'section': 'images', 'images': images})
     return render(request, 'images/image/list.html', {'section': 'images', 'images': images})
-
-        

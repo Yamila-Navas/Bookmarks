@@ -3,6 +3,8 @@ from django.contrib.auth import get_user_model
 from .models import Profile
 
 
+User = get_user_model()
+
 class LoginForm(forms.Form):
     '''
     no uso esto
