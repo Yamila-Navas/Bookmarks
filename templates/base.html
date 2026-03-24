@@ -54,6 +54,10 @@
 
     <script src="//cdn.jsdelivr.net/npm/js-cookie@3.0.5/dist/js.cookie.min.js"></script>
     <script>
+        const SITE_URL = "{{ SITE_URL }}";
+    </script>
+   
+    <script>
         const csrftoken = Cookies.get('csrftoken');
         document.addEventListener('DOMContentLoaded', (event) => {
             // DOM loaded

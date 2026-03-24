@@ -1,7 +1,7 @@
-const siteUrl = '//127.0.0.1:8000/';
+const siteUrl = 'https://mysite.com:8000/';
 const styleUrl = siteUrl + 'static/css/bookmarklet.css';
-const minWidth = 250;
-const minHeight = 250;
+const minWidth = 50;
+const minHeight = 50;
 
 // load CSS
 var head = document.getElementsByTagName('head')[0];
@@ -19,7 +19,7 @@ boxHtml = `
         <h1>Select an image to bookmark:</h1>
         <div class="images"></div>
     </div>`;
-body.innerHTML += boxHtml;
+body.insertAdjacentHTML('beforeend', boxHtml);
 
 
 /**
