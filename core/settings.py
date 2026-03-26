@@ -1,5 +1,5 @@
 from pathlib import Path
-from decouple import config, Csv
+from decouple import config
 from django.urls import reverse_lazy
 from urllib.parse import urlparse
 
@@ -7,9 +7,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # ── Seguridad ─────────────────────────────
 SECRET_KEY = config("SECRET_KEY")
-DEBUG = config("DEBUG", cast=bool, default=False)
-
-ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='*', cast=Csv())
+DEBUG = config("DEBUG", cast=bool)
+ALLOWED_HOSTS = config("ALLOWED_HOSTS", cast=lambda v: [s.strip() for s in v.split(",")])
 
 # ── Apps y middleware ─────────────────────
 INSTALLED_APPS = [
@@ -34,7 +33,6 @@ if DEBUG:
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -58,7 +56,6 @@ TEMPLATES = [{
             'django.template.context_processors.request',
             'django.contrib.auth.context_processors.auth',
             'django.contrib.messages.context_processors.messages',
-            'core.context_processors.site_settings',
         ],
     },
 }]
@@ -69,12 +66,12 @@ WSGI_APPLICATION = 'core.wsgi.application'
 # ── Base de datos ─────────────────────────
 DATABASES = {
     'default': {
-        'ENGINE': config('DB_ENGINE', default='django.db.backends.sqlite3'),
-        'NAME': config('DB_NAME', default=BASE_DIR / 'db.sqlite3'),
-        'USER': config('DB_USER', default=''),
-        'PASSWORD': config('DB_PASSWORD', default=''),
-        'HOST': config('DB_HOST', default=''),
-        'PORT': config('DB_PORT', default=''),
+        'ENGINE': config('DB_ENGINE'),
+        'NAME': config('DB_NAME'),
+        'USER': config('DB_USER'),
+        'PASSWORD': config('DB_PASSWORD'),
+        'HOST': config('DB_HOST'),
+        'PORT': config('DB_PORT'),
     }
 }
 
@@ -83,7 +80,6 @@ DATABASES = {
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 STATIC_ROOT = BASE_DIR / 'staticfiles'
-STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
@@ -106,8 +102,8 @@ AUTHENTICATION_BACKENDS = [
 # ==============================
 # COOKIES (IMPORTANTE PARA OAUTH)
 # ==============================
-SESSION_COOKIE_SAMESITE = 'None'
-CSRF_COOKIE_SAMESITE = 'None'
+SESSION_COOKIE_SAMESITE = config('SESSION_COOKIE_SAMESITE')
+CSRF_COOKIE_SAMESITE = config('CSRF_COOKIE_SAMESITE')
 
 
 # ==============================
@@ -168,29 +164,50 @@ if DEBUG:
 # SECURITY (PROD)
 # ==============================
 if not DEBUG:
-    CSRF_COOKIE_SECURE = True
-    SESSION_COOKIE_SECURE = True
 
+    # Protección básica contra ataques XSS en el navegador
+    SECURE_BROWSER_XSS_FILTER = config('SECURE_BROWSER_XSS_FILTER', cast=bool)
+
+    # Evita que el navegador adivine tipos de archivos (seguridad)
+    SECURE_CONTENT_TYPE_NOSNIFF = config('SECURE_CONTENT_TYPE_NOSNIFF', cast=bool)
+
+    # Bloquea que el sitio se cargue en iframes (anti clickjacking)
+    X_FRAME_OPTIONS = config('X_FRAME_OPTIONS')
+
+    # Fuerza HTTPS por X segundos (HSTS)
+    SECURE_HSTS_SECONDS = config('SECURE_HSTS_SECONDS', cast=int)
+
+    # Aplica HSTS también a subdominios
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = config('SECURE_HSTS_INCLUDE_SUBDOMAINS', cast=bool)
+
+    # Permite incluir el dominio en listas HSTS de navegadores
+    SECURE_HSTS_PRELOAD = config('SECURE_HSTS_PRELOAD', cast=bool)
+
+    # Indica a Django que está detrás de un proxy (ej: Nginx con HTTPS)
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
-    SECURE_BROWSER_XSS_FILTER = True
-    SECURE_CONTENT_TYPE_NOSNIFF = True
-    X_FRAME_OPTIONS = 'DENY'
+    # Usa el host enviado por el proxy
+    USE_X_FORWARDED_HOST = config('USE_X_FORWARDED_HOST', cast=bool)
 
-    SECURE_HSTS_SECONDS = 31536000
-    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
-    SECURE_HSTS_PRELOAD = True
+    # Redirige todo el tráfico a HTTPS
+    SECURE_SSL_REDIRECT = config('SECURE_SSL_REDIRECT', cast=bool)
 
+    # Cookies de sesión solo por HTTPS
+    SESSION_COOKIE_SECURE = config('SESSION_COOKIE_SECURE', cast=bool)
+
+    # Cookie CSRF solo por HTTPS
+    CSRF_COOKIE_SECURE = config('CSRF_COOKIE_SECURE', cast=bool)
+
+    # Dominios permitidos para CORS (frontend que consume tu API)
     CORS_ALLOWED_ORIGINS = config(
         "CORS_ALLOWED_ORIGINS",
-        default="",
-        cast=lambda v: [s.strip() for s in v.split(",")] if v else []
+        cast=lambda v: [s.strip() for s in v.split(",")]
     )
 
+    # Dominios confiables para protección CSRF
     CSRF_TRUSTED_ORIGINS = config(
         "CSRF_TRUSTED_ORIGINS",
-        default="",
-        cast=lambda v: [s.strip() for s in v.split(",")] if v else []
+        cast=lambda v: [s.strip() for s in v.split(",")]
     )
 
 
