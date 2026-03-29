@@ -1,13 +1,13 @@
 <!-- no estamos usando este html -->
 
 {% extends "base.html" %}
-{% block title %}Log-in{% endblock %}
+{% block title %}Iniciar sesión{% endblock %}
 {% block content %}
-  <h1>Log-in</h1>
-<p>Please, use the following form to log-in:</p>
+  <h1>Iniciar sesión</h1>
+<p>Usa el siguiente formulario para iniciar sesión:</p>
 <form method="post">
     {{ form.as_p }}
     {% csrf_token %}
-    <p><input type="submit" value="Log in"></p>
+    <p><input type="submit" value="Entrar"></p>
 </form>
 {% endblock %}

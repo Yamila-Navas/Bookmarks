@@ -11,17 +11,17 @@
     <div>
         <span class="count">
             <span class="total">{{ total_likes }}</span>
-            like{{ total_likes|pluralize }}
+            me gusta
         </span>
         <span class="count">
-          {{ total_views }} view{{ total_views|pluralize }}
+          {{ total_views }} visualizaci{{ total_views|pluralize:"ón,ones" }}
         </span>
         <a href="#" data-id="{{ image.id }}" data-action="{% if request.user in users_like %}un{% endif %}like"
             class="like button">
             {% if request.user not in users_like %}
-            Like
+            Me gusta
             {% else %}
-            Unlike
+            Ya no me gusta
             {% endif %}
         </a>
     </div>
@@ -36,7 +36,7 @@
         <p>{{ user.first_name }}</p>
     </div>
     {% empty %}
-    Nobody likes this image yet.
+    A nadie le gusta esta imagen todavía.
     {% endfor %}
 </div>
 {% endwith %}
@@ -74,7 +74,7 @@ if (likeButton) {
         const action = previousAction === 'like' ? 'unlike' : 'like';
 
         likeButton.dataset.action = action;
-        likeButton.innerHTML = action.charAt(0).toUpperCase() + action.slice(1);
+        likeButton.innerHTML = action === 'like' ? 'Me gusta' : 'Ya no me gusta';
 
         const likeCount = document.querySelector('span.count .total');
         let totalLikes = parseInt(likeCount.innerHTML);

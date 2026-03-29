@@ -1,17 +1,17 @@
 {% extends "base.html" %}
-{% block title %}Dashboard{% endblock %}
+{% block title %}Panel{% endblock %}
 {% block content %}
-<h1>Dashboard</h1>
+<h1>Panel</h1>
 {% with total_images_created=request.user.images_created.count %}
-<p>Welcome to your dashboard. You have bookmarked {{ total_images_created }} image{{ total_images_created|pluralize }}.
+<p>Bienvenido a tu panel. Has guardado {{ total_images_created }} im{{ total_images_created|pluralize:"agen,ágenes" }}.
 </p>
 {% endwith %}
-<p>Drag the following button to your bookmarks toolbar to bookmark images from other websites → <a
-                href="javascript:{% include "bookmarklet_launcher.js" %}" class="button">Bookmark it</a></p>
-<p>You can also <a href="{% url "edit" %}">edit your profile</a> or <a href="{% url "password_change" %}">change your
-                password</a>.</p>
+<p>Arrastra el siguiente botón a tu barra de marcadores para guardar imágenes desde otros sitios web → <a
+                href="javascript:{% include "bookmarklet_launcher.js" %}" class="button">Guardar imagen</a></p>
+<p>También puedes <a href="{% url "edit" %}">editar tu perfil</a> o <a href="{% url "password_change" %}">cambiar tu
+                contraseña</a>.</p>
 
- <h2>What's happening</h2>
+ <h2>Qué está pasando</h2>
  <div id="action-list">
     {% for action in actions %}
       {% include "actions/action/detail.html" %}
